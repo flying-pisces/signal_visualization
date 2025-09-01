@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AAPL - Earnings Momentum Play</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            padding: 10px;
+            max-width: 420px;
+            margin: 0 auto;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5px;
+            margin-bottom: 15px;
+        }
+        
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ff88, #00d4ff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #00ff88;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+        
+        .back-button:hover {
+            opacity: 0.8;
+        }
+        
+        /* Signal Card */
+        .signal-card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid #95a5a6;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        
+        
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hot-label {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #ff4757, #ff6348);
+            color: white;
+            font-size: 9px;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 10px;
+            text-transform: uppercase;
+            animation: hot-pulse 2s infinite;
+        }
+        
+        @keyframes hot-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .signal-header {
+            margin-bottom: 12px;
+        }
+        
+        .ticker-main {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        
+        .ticker {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .strategy-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Strategy Badge Colors */
+        .ipo-debut { background: linear-gradient(135deg, #ff4757, #ff6348); }
+        .yolo-play { 
+            background: linear-gradient(135deg, #ff00ff, #ff4757); 
+            animation: color-shift 3s infinite;
+        }
+        .pre-market { background: #ffd93d; color: #000; }
+        .stock-split { background: #3498db; }
+        .option-spread { background: #e74c3c; }
+        .crypto-play { background: #f7931a; color: #000; }
+        .fda-event { background: #16a085; }
+        .post-market { background: #95a5a6; }
+        .indicator-signal { background: #d35400; }
+        
+        @keyframes color-shift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(30deg); }
+        }
+        
+        .company-name {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+        
+        .price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .change {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .positive { color: #00ff88; }
+        .negative { color: #ff4757; }
+        
+        /* Chart Section */
+        .chart-section {
+            height: 100px;
+            margin-bottom: 12px;
+            position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+            padding: 8px;
+        }
+        
+        .chart-section::after {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            width: 1px;
+            height: 80%;
+            background: rgba(255, 255, 255, 0.2);
+            border-left: 1px dashed rgba(255, 255, 255, 0.3);
+        }
+        
+        .event-label {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
+        }
+        
+        .prediction-indicator {
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 9px;
+            color: #666;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        
+        /* Key Stats */
+        .key-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .stat {
+            text-align: center;
+            padding: 8px 4px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        .stat-value {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        
+        .stat-label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        
+        /* Strategy Info */
+        .strategy-info {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .strategy-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #00d4ff;
+        }
+        
+        .strategy-desc {
+            font-size: 12px;
+            line-height: 1.4;
+            color: #aaa;
+            margin-bottom: 6px;
+        }
+        
+        .strategy-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #00ff88;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        /* Signal Footer */
+        .signal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .notify-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .toggle {
+            width: 36px;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle.on {
+            background: #00ff88;
+        }
+        
+        .toggle-knob {
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+        
+        .toggle.on .toggle-knob {
+            transform: translateX(16px);
+        }
+        
+        /* Haptic Feedback */
+        .haptic {
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Mobile Optimizations */
+        @media (max-width: 375px) {
+            .signal-card {
+                padding: 12px;
+            }
+            
+            .ticker {
+                font-size: 18px;
+            }
+            
+            .price {
+                font-size: 22px;
+            }
+            
+            .key-stats {
+                gap: 6px;
+            }
+            
+            .stat {
+                padding: 6px 4px;
+            }
+            
+            .stat-value {
+                font-size: 14px;
+            }
+        }
+        
+        /* Watch Mode */
+        @media (max-width: 200px) {
+            body {
+                padding: 8px;
+            }
+            
+            .signal-card {
+                padding: 10px;
+            }
+            
+            .ticker {
+                font-size: 16px;
+            }
+            
+            .price {
+                font-size: 18px;
+            }
+            
+            .chart-section {
+                height: 50px;
+            }
+            
+            .key-stats {
+                display: none;
+            }
+            
+            .strategy-info {
+                font-size: 10px;
+                padding: 8px;
+            }
+            
+            .strategy-desc {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">SignalPro</div>
+        <a href="../summary.html" class="back-button haptic">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back
+        </a>
+    </div>
+    
+    <div class="signal-card">
+        
+        <div class="signal-header">
+            <div class="ticker-main">
+                <span class="ticker">AAPL</span>
+                <span class="strategy-badge post-market">EARNINGS</span>
+            </div>
+            <div class="company-name">Apple Inc</div>
+            <div class="price-row">
+                <span class="price">$175.50</span>
+                <span class="change positive">
+                    +3.2%
+                </span>
+            </div>
+        </div>
+        
+                <div class="chart-section">
+            <canvas id="chart-aapl"></canvas>
+            <div class="event-label">Earnings beat</div>
+            <div class="prediction-indicator">← now | prediction →</div>
+        </div>
+        
+                <div class="key-stats">
+            <div class="stat">
+                <div class="stat-value positive">$185</div>
+                <div class="stat-label">Target</div>
+            </div>
+        </div>
+        
+                <div class="strategy-info">
+            <div class="strategy-title">Earnings Momentum Play</div>
+            <div class="strategy-desc">
+                Beat earnings by 15%. Strong guidance raise. Buy at open for continuation momentum. Historical 3-day avg after beats is +5%.
+            </div>
+            <a href="https://example.com/earnings-strategy" class="strategy-link">
+                ER playbook →
+            </a>
+        </div>
+        
+        <div class="signal-footer">
+            <div class="notify-toggle">
+                <span>Exit alert</span>
+                <div class="toggle on haptic" onclick="toggleNotify(this)">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+            <span>Just now</span>
+        </div>
+    </div>
+
+    <script>
+        // Mini chart configuration
+        const miniChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            },
+            scales: {
+                x: { 
+                    display: false,
+                    grid: { display: false }
+                },
+                y: { 
+                    display: false,
+                    grid: { display: false }
+                }
+            },
+            elements: {
+                point: { radius: 0 },
+                line: { borderWidth: 2 }
+            },
+            interaction: {
+                intersect: false
+            }
+        };
+        
+        // Initialize chart with prediction bands
+        const chartCtx = document.getElementById('chart-aapl')?.getContext('2d');
+        if (chartCtx) {
+            const currentPrice = 175.5;
+            new Chart(chartCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 40}, (_, i) => i - 20),
+                    datasets: [
+                        {
+                            label: 'Historical',
+                            data: [141.45635799816876, 143.04647613270356, 143.90995485851658, 148.60880236828936, 147.76998604062553, 150.90582717049662, 154.8975064056787, 154.91083160022902, 159.13937955315308, 160.7501539288029, 162.12265028637424, 164.20786913545592, 170.39104961628294, 172.17240527580134, 174.34081461999583, 173.27713626379898, 175.80119548937492, 176.73743768060172, 175.23410731321775, 173.44874826413098].concat(Array(20).fill(null)),
+                            borderColor: '#95a5a6',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Upper Band',
+                            data: Array(20).fill(null).concat([175.5, 179.1325, 182.90854692507259, 186.7458695221017, 190.62479341998815, 194.53559471544008, 198.4723871931079, 202.43119830827348, 206.40915530675935, 210.40407845653965, 214.41425411794165, 218.43829776731155, 222.4750662478418, 226.5235988701508, 230.58307636044455, 234.65279134559626, 238.73212657236633, 242.82053847310482, 246.91754452572565, 251.02271336828]),
+                            borderColor: 'rgba(255, 71, 87, 0.3)',
+                            borderDash: [5, 5],
+                            borderWidth: 1,
+                            pointRadius: 0,
+                            fill: '+1',
+                            backgroundColor: 'rgba(255, 71, 87, 0.1)'
+                        },
+                        {
+                            label: 'Base Case',
+                            data: Array(20).fill(null).concat([175.5, 176.3775, 177.255, 178.1325, 179.01, 179.8875, 180.765, 181.6425, 182.52, 183.3975, 184.275, 185.1525, 186.03, 186.9075, 187.785, 188.6625, 189.54, 190.4175, 191.29500000000002, 192.1725]),
+                            borderColor: '#95a5a6',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Lower Band',
+                            data: Array(20).fill(null).concat([175.5, 172.745, 169.91947015231725, 167.0655980743514, 164.19290614985482, 161.30600806632816, 158.40765871364135, 155.49969779218506, 152.58344422345724, 149.65989143369484, 146.72981545698036, 143.79383975426384, 140.85247649591355, 137.90615412787722, 134.9552364948265, 132.00003653034616, 129.04082632004742, 126.07784466690524, 123.11130289025148, 120.14138934664919]),
+                            borderColor: 'rgba(255, 71, 87, 0.3)',
+                            borderDash: [5, 5],
+                            borderWidth: 1,
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: miniChartOptions
+            });
+        }
+        
+        // Toggle notification
+        function toggleNotify(element) {
+            element.classList.toggle('on');
+            vibrate();
+        }
+        
+        // Haptic feedback
+        function vibrate(duration = 10) {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(duration);
+            }
+        }
+        
+        // Real-time price updates
+        function updatePrice() {
+            const priceEl = document.querySelector('.price');
+            const changeEl = document.querySelector('.change');
+            if (priceEl) {
+                const current = parseFloat(priceEl.textContent.replace('$', '').replace(',', ''));
+                const change = (Math.random() - 0.5) * 0.02 * current;
+                const newPrice = current + change;
+                
+                if (current > 1000) {
+                    priceEl.textContent = '$' + newPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                } else {
+                    priceEl.textContent = '$' + newPrice.toFixed(2);
+                }
+                
+                if (changeEl) {
+                    const percent = ((Math.random() - 0.4) * 5).toFixed(1);
+                    changeEl.textContent = (percent > 0 ? '+' : '') + percent + '%';
+                    changeEl.className = 'change ' + (percent > 0 ? 'positive' : 'negative');
+                }
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Start price updates
+            setInterval(updatePrice, 5000);
+            
+            // Add haptic to all interactive elements
+            document.querySelectorAll('.haptic').forEach(el => {
+                el.addEventListener('click', () => vibrate());
+            });
+        });
+        
+        // PWA Support
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

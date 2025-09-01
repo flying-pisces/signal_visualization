@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignalPro - Web Signal Generator (API Version)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ff88, #00d4ff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #888;
+            font-size: 1.1rem;
+        }
+        
+        .api-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+        
+        .api-status.connected {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+        
+        .api-status.disconnected {
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .form-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .preview-section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #00ff88;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .required {
+            color: #ff4757;
+        }
+        
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.2);
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: #00ff88;
+        }
+        
+        .help-text {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        .stats-container {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .stat-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 15px;
+        }
+        
+        .stat-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .preview-card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #00ff88;
+            position: relative;
+            overflow: hidden;
+            min-height: 400px;
+        }
+        
+        .preview-header {
+            margin-bottom: 15px;
+        }
+        
+        .preview-ticker {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        
+        .preview-company {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .preview-price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+            margin: 10px 0;
+        }
+        
+        .preview-change {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .positive { color: #00ff88; }
+        .negative { color: #ff4757; }
+        
+        .preview-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .preview-stat {
+            text-align: center;
+            padding: 10px 5px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        .preview-stat-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .preview-stat-label {
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+        }
+        
+        .preview-strategy {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .preview-strategy-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #00d4ff;
+            margin-bottom: 8px;
+        }
+        
+        .preview-strategy-desc {
+            font-size: 0.85rem;
+            color: #aaa;
+            line-height: 1.4;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            color: #000;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+        }
+        
+        .hot-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #ff4757, #ff6348);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            animation: hot-pulse 2s infinite;
+        }
+        
+        @keyframes hot-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #00ff88;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #00ff88;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .success-message {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        .success-links {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .success-link {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #00ff88;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .success-link:hover {
+            background: rgba(0, 255, 136, 0.2);
+        }
+        
+        .error-message {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            color: #ff4757;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .files-list {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+        }
+        
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        
+        .file-info {
+            flex: 1;
+        }
+        
+        .file-name {
+            color: #fff;
+            font-weight: 500;
+        }
+        
+        .file-meta {
+            color: #888;
+            font-size: 0.75rem;
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .file-action {
+            padding: 4px 8px;
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .file-action:hover {
+            background: rgba(0, 255, 136, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .form-row,
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+            
+            .success-links {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">🎯 SignalPro Web Generator</h1>
+            <p class="subtitle">Create professional mobile-optimized trading signal pages</p>
+            <div id="apiStatus" class="api-status disconnected">
+                <span id="statusIcon">🔴</span>
+                <span id="statusText">Connecting to API...</span>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Form Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    📊 Signal Configuration
+                </h2>
+                
+                <form id="signalForm">
+                    <!-- Basic Info -->
+                    <div class="form-group">
+                        <label class="form-label">Ticker Symbol <span class="required">*</span></label>
+                        <input type="text" id="ticker" class="form-input" placeholder="AAPL" required>
+                        <div class="help-text">Stock/crypto symbol (e.g., AAPL, TSLA, BTC)</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Company Name <span class="required">*</span></label>
+                        <input type="text" id="companyName" class="form-input" placeholder="Apple Inc" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Signal Type <span class="required">*</span></label>
+                            <select id="signalType" class="form-select" required>
+                                <option value="">Select Signal Type</option>
+                                <option value="IPO_TODAY">IPO Today - New debuts</option>
+                                <option value="YOLO_CALLS">YOLO Calls - High risk options</option>
+                                <option value="PRE_MARKET">Pre-Market - Gap plays</option>
+                                <option value="STOCK_SPLIT">Stock Split - Announcements</option>
+                                <option value="PUT_SPREAD">Put Spread - Credit spreads</option>
+                                <option value="CRYPTO_DEFI">Crypto DeFi - DeFi plays</option>
+                                <option value="FDA_EVENT">FDA Event - Biotech catalysts</option>
+                                <option value="EARNINGS">Earnings - Momentum plays</option>
+                                <option value="UNUSUAL_OPTIONS">Unusual Options - Flow alerts</option>
+                                <option value="MEME_SQUEEZE">Meme Squeeze - Squeeze plays</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Priority Level</label>
+                            <select id="priority" class="form-select">
+                                <option value="NORMAL">Normal</option>
+                                <option value="HOT">🔥 Hot</option>
+                                <option value="URGENT">⚡ Urgent</option>
+                                <option value="WATCH">👀 Watch</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Price Data -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Current Price ($) <span class="required">*</span></label>
+                            <input type="number" id="currentPrice" class="form-input" placeholder="175.50" step="0.01" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Change (%) <span class="required">*</span></label>
+                            <input type="number" id="changePercent" class="form-input" placeholder="3.2" step="0.01" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Key Stats -->
+                    <div class="form-group">
+                        <label class="form-label">Key Statistics (exactly 3)</label>
+                        <div class="stats-container">
+                            <div class="stat-row">
+                                <input type="text" id="stat1Value" class="form-input" placeholder="$185">
+                                <input type="text" id="stat1Label" class="form-input" placeholder="Target">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="stat1Positive" class="checkbox" checked>
+                                    <label for="stat1Positive">+</label>
+                                </div>
+                            </div>
+                            <div class="stat-row">
+                                <input type="text" id="stat2Value" class="form-input" placeholder="15%">
+                                <input type="text" id="stat2Label" class="form-input" placeholder="Beat Est">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="stat2Positive" class="checkbox" checked>
+                                    <label for="stat2Positive">+</label>
+                                </div>
+                            </div>
+                            <div class="stat-row">
+                                <input type="text" id="stat3Value" class="form-input" placeholder="2.5M">
+                                <input type="text" id="stat3Label" class="form-input" placeholder="Volume">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="stat3Positive" class="checkbox" checked>
+                                    <label for="stat3Positive">+</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="help-text">Value, Label, and whether it's positive (green) or negative (red)</div>
+                    </div>
+                    
+                    <!-- Strategy -->
+                    <div class="form-group">
+                        <label class="form-label">Strategy Title <span class="required">*</span></label>
+                        <input type="text" id="strategyTitle" class="form-input" placeholder="Earnings Momentum Play" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Strategy Description <span class="required">*</span></label>
+                        <textarea id="strategyDesc" class="form-textarea" placeholder="Beat earnings by 15%. Strong guidance raise. Buy at open for continuation momentum. Historical 3-day avg after beats is +5%." required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Chart Pattern</label>
+                            <select id="chartPattern" class="form-select">
+                                <option value="momentum">Momentum - Strong upward</option>
+                                <option value="volatile">Volatile - High swings</option>
+                                <option value="breakout">Breakout - Consolidation then pop</option>
+                                <option value="decline">Decline - Downward trend</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Event Label</label>
+                            <input type="text" id="eventLabel" class="form-input" placeholder="Earnings beat">
+                        </div>
+                    </div>
+                    
+                    <!-- Visual Options -->
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="isYolo" class="checkbox">
+                        <label for="isYolo">YOLO Style (purple glow effect)</label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Timestamp</label>
+                        <input type="text" id="timestamp" class="form-input" placeholder="Just now">
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Preview Section -->
+            <div class="preview-section">
+                <h2 class="section-title">
+                    📱 Live Preview
+                </h2>
+                
+                <div class="preview-card" id="previewCard">
+                    <div class="hot-badge" id="hotBadge" style="display: none;">🔥 HOT</div>
+                    
+                    <div class="preview-header">
+                        <div class="preview-ticker" id="previewTicker">AAPL</div>
+                        <div class="preview-company" id="previewCompany">Apple Inc</div>
+                    </div>
+                    
+                    <div class="preview-price" id="previewPrice">$175.50</div>
+                    <div class="preview-change positive" id="previewChange">+3.2%</div>
+                    
+                    <div class="preview-stats" id="previewStats">
+                        <div class="preview-stat">
+                            <div class="preview-stat-value positive">$185</div>
+                            <div class="preview-stat-label">Target</div>
+                        </div>
+                        <div class="preview-stat">
+                            <div class="preview-stat-value positive">15%</div>
+                            <div class="preview-stat-label">Beat Est</div>
+                        </div>
+                        <div class="preview-stat">
+                            <div class="preview-stat-value positive">2.5M</div>
+                            <div class="preview-stat-label">Volume</div>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-strategy">
+                        <div class="preview-strategy-title" id="previewStrategyTitle">Earnings Momentum Play</div>
+                        <div class="preview-strategy-desc" id="previewStrategyDesc">
+                            Beat earnings by 15%. Strong guidance raise. Buy at open for continuation momentum.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="loading" id="loadingIndicator">
+                    <div class="spinner"></div>
+                    <div>Generating your signal...</div>
+                </div>
+                
+                <div class="success-message" id="successMessage">
+                    <strong>✅ Signal Generated Successfully!</strong><br>
+                    <div id="successDetails"></div>
+                    <div class="success-links">
+                        <a id="viewLink" href="#" target="_blank" class="success-link">📱 View Signal</a>
+                        <a id="downloadLink" href="#" class="success-link">💾 Download HTML</a>
+                    </div>
+                </div>
+                
+                <div class="error-message" id="errorMessage">
+                    <strong>❌ Generation Error</strong><br>
+                    <span id="errorText"></span>
+                </div>
+                
+                <div id="recentFiles" class="files-list" style="display: none;">
+                    <h4 style="margin-bottom: 10px; color: #00ff88;">📁 Recent Files</h4>
+                    <div id="filesList"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button type="button" class="btn btn-secondary" onclick="updatePreview()">
+                👁️ Update Preview
+            </button>
+            <button type="button" id="generateBtn" class="btn btn-primary" onclick="generateSignal()">
+                🚀 Generate Signal HTML
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let isApiConnected = false;
+        
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            checkApiConnection();
+            setupRealtimeUpdates();
+            updatePreview();
+            loadRecentFiles();
+        });
+        
+        async function checkApiConnection() {
+            try {
+                const response = await fetch(`${API_BASE}/types`);
+                if (response.ok) {
+                    isApiConnected = true;
+                    updateApiStatus(true, 'API Connected');
+                } else {
+                    throw new Error('API not responding');
+                }
+            } catch (error) {
+                isApiConnected = false;
+                updateApiStatus(false, 'API Disconnected - Using offline mode');
+            }
+        }
+        
+        function updateApiStatus(connected, message) {
+            const statusEl = document.getElementById('apiStatus');
+            const iconEl = document.getElementById('statusIcon');
+            const textEl = document.getElementById('statusText');
+            
+            statusEl.className = `api-status ${connected ? 'connected' : 'disconnected'}`;
+            iconEl.textContent = connected ? '🟢' : '🔴';
+            textEl.textContent = message;
+            
+            // Update generate button
+            const generateBtn = document.getElementById('generateBtn');
+            if (!connected) {
+                generateBtn.innerHTML = '📱 Generate Offline HTML';
+            }
+        }
+        
+        function setupRealtimeUpdates() {
+            const inputs = ['ticker', 'companyName', 'currentPrice', 'changePercent', 'strategyTitle', 'strategyDesc', 'priority'];
+            
+            inputs.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', updatePreview);
+                }
+            });
+            
+            // Stats inputs
+            for (let i = 1; i <= 3; i++) {
+                ['Value', 'Label', 'Positive'].forEach(suffix => {
+                    const element = document.getElementById(`stat${i}${suffix}`);
+                    if (element) {
+                        element.addEventListener('input', updatePreview);
+                        element.addEventListener('change', updatePreview);
+                    }
+                });
+            }
+            
+            document.getElementById('signalType').addEventListener('change', updateSignalTypeColors);
+            document.getElementById('isYolo').addEventListener('change', updateYoloStyle);
+        }
+        
+        function updatePreview() {
+            // Basic info
+            const ticker = document.getElementById('ticker').value || 'AAPL';
+            const companyName = document.getElementById('companyName').value || 'Apple Inc';
+            const currentPrice = parseFloat(document.getElementById('currentPrice').value) || 175.50;
+            const changePercent = parseFloat(document.getElementById('changePercent').value) || 3.2;
+            const priority = document.getElementById('priority').value;
+            
+            document.getElementById('previewTicker').textContent = ticker.toUpperCase();
+            document.getElementById('previewCompany').textContent = companyName;
+            document.getElementById('previewPrice').textContent = `$${currentPrice.toFixed(2)}`;
+            
+            const changeEl = document.getElementById('previewChange');
+            changeEl.textContent = `${changePercent > 0 ? '+' : ''}${changePercent.toFixed(1)}%`;
+            changeEl.className = `preview-change ${changePercent >= 0 ? 'positive' : 'negative'}`;
+            
+            // Hot badge
+            const hotBadge = document.getElementById('hotBadge');
+            if (priority === 'HOT') {
+                hotBadge.style.display = 'block';
+                hotBadge.textContent = '🔥 HOT';
+            } else if (priority === 'URGENT') {
+                hotBadge.style.display = 'block';
+                hotBadge.textContent = '⚡ URGENT';
+            } else if (priority === 'WATCH') {
+                hotBadge.style.display = 'block';
+                hotBadge.textContent = '👀 WATCH';
+            } else {
+                hotBadge.style.display = 'none';
+            }
+            
+            // Stats
+            const statsContainer = document.getElementById('previewStats');
+            statsContainer.innerHTML = '';
+            
+            for (let i = 1; i <= 3; i++) {
+                const value = document.getElementById(`stat${i}Value`).value;
+                const label = document.getElementById(`stat${i}Label`).value;
+                const isPositive = document.getElementById(`stat${i}Positive`).checked;
+                
+                if (value && label) {
+                    const statEl = document.createElement('div');
+                    statEl.className = 'preview-stat';
+                    statEl.innerHTML = `
+                        <div class="preview-stat-value ${isPositive ? 'positive' : 'negative'}">${value}</div>
+                        <div class="preview-stat-label">${label}</div>
+                    `;
+                    statsContainer.appendChild(statEl);
+                }
+            }
+            
+            // Strategy
+            const strategyTitle = document.getElementById('strategyTitle').value || 'Earnings Momentum Play';
+            const strategyDesc = document.getElementById('strategyDesc').value || 'Beat earnings by 15%. Strong guidance raise. Buy at open for continuation momentum.';
+            
+            document.getElementById('previewStrategyTitle').textContent = strategyTitle;
+            document.getElementById('previewStrategyDesc').textContent = strategyDesc.substring(0, 150) + (strategyDesc.length > 150 ? '...' : '');
+        }
+        
+        function updateSignalTypeColors() {
+            const signalType = document.getElementById('signalType').value;
+            const previewCard = document.getElementById('previewCard');
+            
+            // Reset classes
+            previewCard.className = 'preview-card';
+            
+            // Apply signal-specific styling
+            const colorMap = {
+                'IPO_TODAY': '#ff4757',
+                'YOLO_CALLS': '#ff00ff',
+                'PRE_MARKET': '#ffd93d',
+                'STOCK_SPLIT': '#3498db',
+                'PUT_SPREAD': '#e74c3c',
+                'CRYPTO_DEFI': '#f7931a',
+                'FDA_EVENT': '#16a085',
+                'EARNINGS': '#95a5a6',
+                'UNUSUAL_OPTIONS': '#d35400',
+                'MEME_SQUEEZE': '#ff00ff'
+            };
+            
+            if (colorMap[signalType]) {
+                previewCard.style.borderColor = colorMap[signalType];
+            }
+        }
+        
+        function updateYoloStyle() {
+            const isYolo = document.getElementById('isYolo').checked;
+            const previewCard = document.getElementById('previewCard');
+            
+            if (isYolo) {
+                previewCard.style.boxShadow = '0 0 30px rgba(255, 0, 255, 0.3)';
+                previewCard.style.animation = 'yolo-glow 3s ease-in-out infinite';
+            } else {
+                previewCard.style.boxShadow = 'none';
+                previewCard.style.animation = 'none';
+            }
+        }
+        
+        async function generateSignal() {
+            // Validate required fields
+            const requiredFields = ['ticker', 'companyName', 'signalType', 'currentPrice', 'changePercent', 'strategyTitle', 'strategyDesc'];
+            let isValid = true;
+            
+            requiredFields.forEach(id => {
+                const element = document.getElementById(id);
+                if (!element.value.trim()) {
+                    element.style.borderColor = '#ff4757';
+                    isValid = false;
+                } else {
+                    element.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                }
+            });
+            
+            if (!isValid) {
+                showError('Please fill in all required fields (marked with *)');
+                return;
+            }
+            
+            // Show loading
+            showLoading(true);
+            hideMessages();
+            
+            // Collect form data
+            const formData = collectFormData();
+            
+            if (isApiConnected) {
+                await generateViaAPI(formData);
+            } else {
+                generateOffline(formData);
+            }
+        }
+        
+        async function generateViaAPI(formData) {
+            try {
+                const response = await fetch(`${API_BASE}/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                showLoading(false);
+                
+                if (result.success) {
+                    showSuccess(result);
+                    loadRecentFiles(); // Refresh file list
+                } else {
+                    showError(result.error || 'Generation failed');
+                }
+                
+            } catch (error) {
+                showLoading(false);
+                showError('Network error: ' + error.message);
+            }
+        }
+        
+        function generateOffline(formData) {
+            try {
+                // Generate HTML content using client-side logic
+                const htmlContent = generateSignalHTMLOffline(formData);
+                
+                // Create filename
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/[-:T]/g, '_');
+                const filename = `${formData.ticker}_${formData.signalType.toLowerCase()}_${timestamp}.html`;
+                
+                // Create download link
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                
+                showLoading(false);
+                showSuccessOffline(filename, url);
+                
+            } catch (error) {
+                showLoading(false);
+                showError('Generation failed: ' + error.message);
+            }
+        }
+        
+        function collectFormData() {
+            const stats = [];
+            for (let i = 1; i <= 3; i++) {
+                const value = document.getElementById(`stat${i}Value`).value.trim();
+                const label = document.getElementById(`stat${i}Label`).value.trim();
+                const isPositive = document.getElementById(`stat${i}Positive`).checked;
+                
+                if (value && label) {
+                    stats.push({ value, label, is_positive: isPositive });
+                }
+            }
+            
+            return {
+                ticker: document.getElementById('ticker').value.trim().toUpperCase(),
+                companyName: document.getElementById('companyName').value.trim(),
+                signalType: document.getElementById('signalType').value,
+                priority: document.getElementById('priority').value,
+                currentPrice: parseFloat(document.getElementById('currentPrice').value),
+                changePercent: parseFloat(document.getElementById('changePercent').value),
+                stats: stats,
+                strategyTitle: document.getElementById('strategyTitle').value.trim(),
+                strategyDesc: document.getElementById('strategyDesc').value.trim(),
+                chartPattern: document.getElementById('chartPattern').value,
+                eventLabel: document.getElementById('eventLabel').value.trim(),
+                isYolo: document.getElementById('isYolo').checked,
+                timestamp: document.getElementById('timestamp').value.trim() || 'Just now'
+            };
+        }
+        
+        function generateSignalHTMLOffline(data) {
+            // Simplified HTML generation for offline mode
+            const signalTypeColors = {
+                'IPO_TODAY': '#ff4757',
+                'YOLO_CALLS': '#ff00ff',
+                'PRE_MARKET': '#ffd93d',
+                'STOCK_SPLIT': '#3498db',
+                'PUT_SPREAD': '#e74c3c',
+                'CRYPTO_DEFI': '#f7931a',
+                'FDA_EVENT': '#16a085',
+                'EARNINGS': '#95a5a6',
+                'UNUSUAL_OPTIONS': '#d35400',
+                'MEME_SQUEEZE': '#ff00ff'
+            };
+            
+            const borderColor = signalTypeColors[data.signalType] || '#00ff88';
+            const hotBadge = data.priority !== 'NORMAL' ? `<div class="hot-label">${data.priority === 'HOT' ? '🔥 HOT' : data.priority === 'URGENT' ? '⚡ URGENT' : '👀 WATCH'}</div>` : '';
+            const yoloStyle = data.isYolo ? 'box-shadow: 0 0 30px rgba(255, 0, 255, 0.3); animation: yolo-glow 3s ease-in-out infinite;' : '';
+            
+            const statsHTML = data.stats.map(stat => `
+                <div class="stat">
+                    <div class="stat-value ${stat.is_positive ? 'positive' : 'negative'}">${stat.value}</div>
+                    <div class="stat-label">${stat.label}</div>
+                </div>
+            `).join('');
+            
+            return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${data.ticker} - ${data.strategyTitle}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000000; color: #ffffff; padding: 10px; max-width: 420px; margin: 0 auto; min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; margin-bottom: 15px; }
+        .logo { font-size: 22px; font-weight: bold; background: linear-gradient(45deg, #00ff88, #00d4ff, #ff00ff); 
+                -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .signal-card { background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); border-radius: 16px; padding: 16px;
+                       border: 1px solid ${borderColor}; position: relative; overflow: hidden; ${yoloStyle} }
+        .hot-label { position: absolute; top: 10px; right: 10px; background: linear-gradient(135deg, #ff4757, #ff6348);
+                     color: white; font-size: 9px; font-weight: bold; padding: 3px 8px; border-radius: 10px; text-transform: uppercase; }
+        .ticker { font-size: 20px; font-weight: bold; margin-bottom: 4px; }
+        .company-name { font-size: 12px; color: #666; margin-bottom: 6px; }
+        .price { font-size: 24px; font-weight: bold; margin-bottom: 8px; }
+        .change { font-size: 14px; font-weight: 600; margin-bottom: 20px; }
+        .positive { color: #00ff88; } .negative { color: #ff4757; }
+        .key-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+        .stat { text-align: center; padding: 8px 4px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; }
+        .stat-value { font-size: 16px; font-weight: bold; margin-bottom: 2px; }
+        .stat-label { font-size: 10px; color: #666; text-transform: uppercase; }
+        .strategy-info { background: rgba(255, 255, 255, 0.03); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+        .strategy-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #00d4ff; }
+        .strategy-desc { font-size: 12px; line-height: 1.4; color: #aaa; }
+        .footer { text-align: center; margin-top: 20px; font-size: 11px; color: #666; }
+        @keyframes yolo-glow { 0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 255, 0.3); } 50% { box-shadow: 0 0 40px rgba(255, 0, 255, 0.5); } }
+        @media (max-width: 375px) { .signal-card { padding: 12px; } .ticker { font-size: 18px; } .price { font-size: 22px; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">SignalPro</div>
+    </div>
+    <div class="signal-card">
+        ${hotBadge}
+        <div class="ticker">${data.ticker}</div>
+        <div class="company-name">${data.companyName}</div>
+        <div class="price">$${data.currentPrice.toFixed(2)}</div>
+        <div class="change ${data.changePercent >= 0 ? 'positive' : 'negative'}">${data.changePercent > 0 ? '+' : ''}${data.changePercent.toFixed(1)}%</div>
+        <div class="key-stats">${statsHTML}</div>
+        <div class="strategy-info">
+            <div class="strategy-title">${data.strategyTitle}</div>
+            <div class="strategy-desc">${data.strategyDesc}</div>
+        </div>
+    </div>
+    <div class="footer">Generated by SignalPro Web GUI</div>
+</body>
+</html>`;
+        }
+        
+        async function loadRecentFiles() {
+            if (!isApiConnected) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/files`);
+                const result = await response.json();
+                
+                if (result.success && result.files.length > 0) {
+                    displayRecentFiles(result.files.slice(0, 5)); // Show only 5 most recent
+                }
+            } catch (error) {
+                console.log('Could not load recent files:', error);
+            }
+        }
+        
+        function displayRecentFiles(files) {
+            const filesContainer = document.getElementById('recentFiles');
+            const filesList = document.getElementById('filesList');
+            
+            filesList.innerHTML = '';
+            
+            files.forEach(file => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                
+                const size = file.size < 1024 ? `${file.size}B` : `${(file.size / 1024).toFixed(1)}KB`;
+                const created = new Date(file.created).toLocaleString();
+                
+                fileItem.innerHTML = `
+                    <div class="file-info">
+                        <div class="file-name">${file.filename}</div>
+                        <div class="file-meta">${size} • ${created}</div>
+                    </div>
+                    <div class="file-actions">
+                        <a href="${file.view_url}" target="_blank" class="file-action">View</a>
+                        <a href="${file.download_url}" class="file-action">Download</a>
+                    </div>
+                `;
+                
+                filesList.appendChild(fileItem);
+            });
+            
+            filesContainer.style.display = 'block';
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loadingIndicator').className = show ? 'loading show' : 'loading';
+            document.getElementById('generateBtn').disabled = show;
+        }
+        
+        function showSuccess(result) {
+            const details = `
+                <strong>${result.filename}</strong><br>
+                Size: ${(result.file_size / 1024).toFixed(1)} KB • ${result.signal_data.ticker} ${result.signal_data.signal_type}
+            `;
+            
+            document.getElementById('successDetails').innerHTML = details;
+            document.getElementById('viewLink').href = `/view/${result.filename}`;
+            document.getElementById('downloadLink').href = result.download_url;
+            document.getElementById('successMessage').className = 'success-message show';
+        }
+        
+        function showSuccessOffline(filename, downloadUrl) {
+            const details = `<strong>${filename}</strong><br>Generated in offline mode`;
+            
+            document.getElementById('successDetails').innerHTML = details;
+            document.getElementById('viewLink').href = downloadUrl;
+            document.getElementById('viewLink').target = '_blank';
+            document.getElementById('downloadLink').href = downloadUrl;
+            document.getElementById('downloadLink').download = filename;
+            document.getElementById('successMessage').className = 'success-message show';
+        }
+        
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').className = 'error-message show';
+        }
+        
+        function hideMessages() {
+            document.getElementById('successMessage').className = 'success-message';
+            document.getElementById('errorMessage').className = 'error-message';
+        }
+        
+        // Add CSS for YOLO glow animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes yolo-glow {
+                0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 255, 0.3); }
+                50% { box-shadow: 0 0 40px rgba(255, 0, 255, 0.5); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
