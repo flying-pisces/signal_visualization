@@ -1,5 +1,47 @@
 # 🎯 SignalPro - Professional Trading Signal Generator
 
+## 💖 SPONSOR THIS PROJECT 💖
+
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/flying-pisces?style=for-the-badge&logo=github&logoColor=white&color=ea4aaa)](https://github.com/sponsors/flying-pisces)
+[![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/flyingpisces)
+[![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/flyingpisces)
+
+### Sponsorship Tiers
+
+#### 🌟 Signal Supporter - $4.99/month
+- Digital sponsor badge
+- Monthly project updates  
+- Discord community access
+
+#### 📊 Trading Enthusiast - $19.99/month
+- Everything in previous tier +
+- Priority feature requests
+- Early access to new signal types
+
+#### 💼 Professional Trader - $99.99/month
+- Everything in previous tiers +
+- 1-hour monthly consultation
+- Logo placement in README
+- Custom signal type development
+
+#### 🚀 Algorithm Sponsor - $999.99/month
+- Everything in previous tiers +
+- Custom market integration
+- Priority development support
+- White-label licensing options
+
+### Why Sponsor?
+
+This project provides professional-grade trading signal generation tools that save hours of development time. Your sponsorship helps:
+
+- 🔧 **Maintain the codebase** and add new signal types
+- 📱 **Keep up with mobile standards** and browser compatibility
+- 🎨 **Develop new GUI features** and visualization tools
+- 📚 **Create comprehensive documentation** and tutorials
+- 🚀 **Support the open-source trading community**
+
+---
+
 [![Python](https://img.shields.io/badge/Python-3.7+-blue.svg)](https://python.org)
 [![Mobile First](https://img.shields.io/badge/Mobile-First-green.svg)](https://web.dev/mobile-first/)
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-purple.svg)](https://web.dev/progressive-web-apps/)
