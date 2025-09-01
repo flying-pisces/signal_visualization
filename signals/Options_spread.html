@@ -6,8 +6,22 @@
     <title>Options Spread - TSLA Iron Condor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #000; color: #fff; padding: 10px; max-width: 420px; margin: 0 auto; min-height: 100vh; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            padding: 10px;
+            max-width: 420px;
+            margin: 0 auto;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
         .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; margin-bottom: 15px; }
         .logo { font-size: 22px; font-weight: bold; background: linear-gradient(45deg, #00ff88, #00d4ff, #ff00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .trading-type-badge { background: #e74c3c; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; text-transform: uppercase; }
@@ -36,15 +50,100 @@
         .spread-leg strong { color: #e74c3c; }
         .profit-zone { background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 8px; padding: 8px; margin-top: 8px; text-align: center; }
         .profit-zone span { color: #00ff88; font-weight: bold; font-size: 12px; }
+        
+        /* Back Button */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.1);
+        }
+        
+        .back-button svg {
+            width: 18px;
+            height: 18px;
+            color: #ffffff;
+        }
+        
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hot-pulse {
+            animation: hot-pulse 2s infinite;
+        }
+        
+        @keyframes hot-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Haptic Feedback */
+        .haptic {
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 360px) {
+            body { padding: 8px; }
+            .signal-card { padding: 16px; }
+            .ticker { font-size: 24px; }
+            .price { font-size: 28px; }
+        }
+        
+        @media (max-width: 200px) {
+            body { padding: 6px; }
+            .signal-card { padding: 12px; }
+            .ticker { font-size: 20px; }
+            .price { font-size: 24px; }
+            .chart-section { height: 80px; }
+            .key-stats { grid-template-columns: 1fr; gap: 8px; }
+        }
     </style>
 </head>
 <body>
+    <!-- Back Button -->
+    <div class="back-button haptic" onclick="goBack()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+    </div>
+    
     <div class="header">
         <div class="logo">SignalPro</div>
         <div class="trading-type-badge">Options Spread</div>
     </div>
     
-    <div class="signal-card">
+    <div class="signal-card fade-in">
         <div class="theta-badge">Θ GANG</div>
         
         <div class="ticker-main">
@@ -149,6 +248,49 @@
                 scales: { x: { display: false }, y: { display: false } },
                 elements: { point: { radius: 0 }, line: { borderWidth: 2 } }
             }
+        });
+        
+        // Back button functionality
+        function goBack() {
+            vibrate();
+            window.location.href = '../summary.html';
+        }
+        
+        // Haptic feedback
+        function vibrate(duration = 10) {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(duration);
+            }
+        }
+        
+        // Real-time price updates
+        function updatePrice() {
+            const priceEl = document.querySelector('.price');
+            const changeEl = document.querySelector('.change');
+            const current = 245.80;
+            const change = (Math.random() - 0.5) * 0.02 * current;
+            const newPrice = current + change;
+            
+            priceEl.textContent = '$' + newPrice.toFixed(2);
+            
+            const percent = ((Math.random() - 0.6) * 4).toFixed(1);
+            changeEl.textContent = (percent > 0 ? '+' : '') + percent + '%';
+            changeEl.className = 'change ' + (percent > 0 ? 'positive' : 'negative');
+            
+            // Update breakeven calculation
+            const newBreakeven = 240 - 3.20; // Strike minus credit
+            document.querySelector('.spread-leg:nth-child(5) strong').textContent = '$' + newBreakeven.toFixed(2);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add haptic to all interactive elements
+            document.querySelectorAll('.haptic').forEach(el => {
+                el.addEventListener('click', () => vibrate());
+            });
+            
+            // Start price updates
+            setInterval(updatePrice, 3000);
         });
     </script>
 </body>

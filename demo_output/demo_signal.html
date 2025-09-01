@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPO Today - CRCL Hot IPO Play</title>
+    <title>DEMO - Demo IPO Play</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
     <style>
         * {
@@ -60,7 +60,7 @@
         
         /* Signal Card */
         .signal-card {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d1515 100%);
+            background: linear-gradient(135deg, #ff4757, #ff6348);
             border-radius: 16px;
             padding: 16px;
             border: 1px solid #ff4757;
@@ -68,6 +68,9 @@
             overflow: hidden;
             animation: fadeIn 0.5s ease;
         }
+        
+        
+        
         
         @keyframes fadeIn {
             from {
@@ -122,7 +125,25 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            background: linear-gradient(135deg, #ff4757, #ff6348);
+        }
+        
+        /* Strategy Badge Colors */
+        .ipo-debut { background: linear-gradient(135deg, #ff4757, #ff6348); }
+        .yolo-play { 
+            background: linear-gradient(135deg, #ff00ff, #ff4757); 
+            animation: color-shift 3s infinite;
+        }
+        .pre-market { background: #ffd93d; color: #000; }
+        .stock-split { background: #3498db; }
+        .option-spread { background: #e74c3c; }
+        .crypto-play { background: #f7931a; color: #000; }
+        .fda-event { background: #16a085; }
+        .post-market { background: #95a5a6; }
+        .indicator-signal { background: #d35400; }
+        
+        @keyframes color-shift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(30deg); }
         }
         
         .company-name {
@@ -145,7 +166,6 @@
         .change {
             font-size: 14px;
             font-weight: 600;
-            color: #00ff88;
         }
         
         .positive { color: #00ff88; }
@@ -385,44 +405,46 @@
         <div class="hot-label">🔥 HOT</div>
         <div class="signal-header">
             <div class="ticker-main">
-                <span class="ticker">CRCL</span>
-                <span class="strategy-badge">IPO TODAY</span>
+                <span class="ticker">DEMO</span>
+                <span class="strategy-badge ipo-debut">IPO TODAY</span>
             </div>
-            <div class="company-name">Circle Internet Group</div>
+            <div class="company-name">Demo Company Inc</div>
             <div class="price-row">
-                <span class="price">$69.00</span>
-                <span class="change positive">+122.6%</span>
+                <span class="price">$50.00</span>
+                <span class="change positive">
+                    +42.9%
+                </span>
             </div>
         </div>
         
-        <div class="chart-section">
-            <canvas id="chart-crcl"></canvas>
-            <div class="event-label">IPO $31 → $103 peak</div>
+                <div class="chart-section">
+            <canvas id="chart-demo"></canvas>
+            <div class="event-label">Signal @ $50.00</div>
             <div class="prediction-indicator">← now | prediction →</div>
         </div>
         
-        <div class="key-stats">
+                <div class="key-stats">
             <div class="stat">
-                <div class="stat-value positive">223%</div>
-                <div class="stat-label">Day 1 High</div>
+                <div class="stat-value positive">150%</div>
+                <div class="stat-label">Day High</div>
             </div>
             <div class="stat">
-                <div class="stat-value">$6.8B</div>
-                <div class="stat-label">Valuation</div>
+                <div class="stat-value positive">$2.5B</div>
+                <div class="stat-label">Market Cap</div>
             </div>
             <div class="stat">
-                <div class="stat-value">46M</div>
+                <div class="stat-value positive">25M</div>
                 <div class="stat-label">Volume</div>
             </div>
         </div>
         
-        <div class="strategy-info">
-            <div class="strategy-title">Hot IPO Momentum Play</div>
+                <div class="strategy-info">
+            <div class="strategy-title">Demo IPO Play</div>
             <div class="strategy-desc">
-                Stablecoin leader 3x'd on debut. ARK bought $150M. Watch for dip to $60-65 for entry. Similar to Coinbase IPO pattern - expect volatility.
+                This is a demonstration of the signal rendering engine. In production, this data would come from your market scan engine.
             </div>
-            <a href="https://example.com/ipo-trading-strategy" class="strategy-link">
-                IPO playbook →
+            <a href="https://example.com/demo" class="strategy-link">
+                Demo →
             </a>
         </div>
         
@@ -433,7 +455,7 @@
                     <div class="toggle-knob"></div>
                 </div>
             </div>
-            <span>15 min ago</span>
+            <span>Demo</span>
         </div>
     </div>
 
@@ -465,22 +487,18 @@
             }
         };
         
-        // Initialize CRCL IPO Chart with prediction bands
-        const crclCtx = document.getElementById('chart-crcl')?.getContext('2d');
-        if (crclCtx) {
-            const currentPrice = 69;
-            new Chart(crclCtx, {
+        // Initialize chart with prediction bands
+        const chartCtx = document.getElementById('chart-demo')?.getContext('2d');
+        if (chartCtx) {
+            const currentPrice = 50.0;
+            new Chart(chartCtx, {
                 type: 'line',
                 data: {
                     labels: Array.from({length: 40}, (_, i) => i - 20),
                     datasets: [
                         {
                             label: 'Historical',
-                            data: Array.from({length: 20}, (_, i) => {
-                                if (i < 2) return 31;
-                                if (i < 4) return 31 + (69 - 31) * (i - 2) / 2;
-                                return 69 + Math.sin((i - 4) * 0.5) * 5;
-                            }).concat(Array(20).fill(null)),
+                            data: [38.57081466476797, 41.4632108198523, 40.84265490826803, 42.52632398245125, 44.00006306044546, 43.622923403876335, 42.959202381505534, 43.19546800558485, 45.74752793652057, 45.75947551481372, 47.017458212596935, 48.28673752151723, 47.22531602386883, 49.79218215133216, 49.91938284485079, 47.259865480742164, 51.689818770647506, 48.317240502314746, 52.44721172155181, 49.70523482747631].concat(Array(20).fill(null)),
                             borderColor: '#ff4757',
                             backgroundColor: 'transparent',
                             borderWidth: 2,
@@ -489,9 +507,7 @@
                         },
                         {
                             label: 'Upper Band',
-                            data: Array(20).fill(null).concat(
-                                Array.from({length: 20}, (_, i) => currentPrice + i * 2 + Math.pow(i, 1.2))
-                            ),
+                            data: Array(20).fill(null).concat([50.0, 51.75, 53.643546925072584, 55.59836952210171, 57.59479341998814, 59.6230947154401, 61.67738719310789, 63.75369830827347, 65.84915530675933, 67.96157845653966, 70.08925411794168, 72.23079776731154, 74.38506624784179, 76.55109887015081, 78.72807636044455, 80.91529134559624, 83.11212657236632, 85.31803847310483, 87.53254452572564, 89.75521336828]),
                             borderColor: 'rgba(255, 71, 87, 0.3)',
                             borderDash: [5, 5],
                             borderWidth: 1,
@@ -501,9 +517,7 @@
                         },
                         {
                             label: 'Base Case',
-                            data: Array(20).fill(null).concat(
-                                Array.from({length: 20}, (_, i) => currentPrice + i * 0.5)
-                            ),
+                            data: Array(20).fill(null).concat([50.0, 50.25, 50.5, 50.75, 51.0, 51.25, 51.5, 51.75, 52.0, 52.25, 52.5, 52.75, 53.0, 53.25, 53.5, 53.75, 54.0, 54.25, 54.5, 54.75]),
                             borderColor: '#ff4757',
                             borderDash: [5, 5],
                             borderWidth: 2,
@@ -511,9 +525,7 @@
                         },
                         {
                             label: 'Lower Band',
-                            data: Array(20).fill(null).concat(
-                                Array.from({length: 20}, (_, i) => currentPrice - i * 1.5 - Math.pow(i, 1.1))
-                            ),
+                            data: Array(20).fill(null).concat([50.0, 48.5, 46.92947015231724, 45.330598074351386, 43.71290614985483, 42.08100806632816, 40.43765871364135, 38.78469779218505, 37.12344422345724, 35.45489143369486, 33.779815456980366, 32.098839754263835, 30.41247649591356, 28.721154127877217, 27.02523649482648, 25.32503653034616, 23.62082632004744, 21.91284466690525, 20.20130289025148, 18.486389346649197]),
                             borderColor: 'rgba(255, 71, 87, 0.3)',
                             borderDash: [5, 5],
                             borderWidth: 1,
@@ -544,10 +556,15 @@
             const priceEl = document.querySelector('.price');
             const changeEl = document.querySelector('.change');
             if (priceEl) {
-                const current = parseFloat(priceEl.textContent.replace('$', ''));
+                const current = parseFloat(priceEl.textContent.replace('$', '').replace(',', ''));
                 const change = (Math.random() - 0.5) * 0.02 * current;
                 const newPrice = current + change;
-                priceEl.textContent = '$' + newPrice.toFixed(2);
+                
+                if (current > 1000) {
+                    priceEl.textContent = '$' + newPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                } else {
+                    priceEl.textContent = '$' + newPrice.toFixed(2);
+                }
                 
                 if (changeEl) {
                     const percent = ((Math.random() - 0.4) * 5).toFixed(1);
