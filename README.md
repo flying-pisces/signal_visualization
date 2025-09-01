@@ -5,6 +5,7 @@
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/flying-pisces?style=for-the-badge&logo=github&logoColor=white&color=ea4aaa)](https://github.com/sponsors/flying-pisces)
 [![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/paypalme/yinye0)
 [![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/flyingpisces)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/flyingpisces)
 
 ### Sponsorship Tiers
 
@@ -270,7 +271,18 @@ aws s3 sync production_signals/ s3://your-bucket/signals/
 
 This project is licensed under the MIT License.
 
-## 🙏 Support
+## 🌐 Community & Support
+
+### 💬 Join Our Trading Community
+[![Reddit](https://img.shields.io/badge/Reddit-FF4500?style=for-the-badge&logo=reddit&logoColor=white)](https://www.reddit.com/r/SqueezePlayLive/)
+
+Join the **SqueezePlayLive** community on Reddit for:
+- 🎯 **Live Signal Discussions** - Share and discuss real-time trading signals
+- 📊 **Market Analysis** - Community-driven market insights and DD
+- 🚀 **Squeeze Play Updates** - Latest momentum and squeeze opportunities  
+- 🤝 **Tool Support** - Get help with SignalPro and share your generated signals
+
+### 🙏 Show Your Support
 
 If this project helps you create better trading signals, please consider:
 
@@ -278,6 +290,7 @@ If this project helps you create better trading signals, please consider:
 - 🐦 **Share it** with your trading community  
 - 💡 **Submit issues** and feature requests
 - 🤝 **Contribute** improvements and new signal types
+- 💬 **Join our Reddit community** at r/SqueezePlayLive
 
 ---
 
