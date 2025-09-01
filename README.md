@@ -3,7 +3,7 @@
 ## 💖 SPONSOR THIS PROJECT 💖
 
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/flying-pisces?style=for-the-badge&logo=github&logoColor=white&color=ea4aaa)](https://github.com/sponsors/flying-pisces)
-[![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/flyingpisces)
+[![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://www.paypal.com/paypalme/yinye0)
 [![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/flyingpisces)
 
 ### Sponsorship Tiers
@@ -268,7 +268,7 @@ aws s3 sync production_signals/ s3://your-bucket/signals/
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ## 🙏 Support
 
